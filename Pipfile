@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pydicom = "*"
+click = "*"
+
+[dev-packages]
+pytest = "*"
+setuptools = "*"
+autopep8 = "*"
+black = "*"
+isort = "*"
+
+[requires]
+python_version = "3.7"
