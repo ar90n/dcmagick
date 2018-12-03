@@ -1,6 +1,6 @@
 import json
 
-from pydicom import datadict
+from pydicom import dcmread, datadict
 from pydicom.uid import UID
 from pydicom.multival import MultiValue
 
@@ -39,7 +39,7 @@ def dump_value(value):
     return repVal
 
 
-def dump_json(dcm):
+def dump_json(src):
     def _convert_to_dict(ds):
         converted = {}
         for key in sorted(ds.keys()):
@@ -55,4 +55,5 @@ def dump_json(dcm):
             converted[dumped_key] = dumped_value
         return converted
 
+    dcm = dcmread(src)
     return json.dumps(_convert_to_dict(dcm))

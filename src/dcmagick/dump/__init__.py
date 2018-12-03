@@ -2,7 +2,6 @@ from enum import Enum
 from pathlib import Path
 
 import click
-from pydicom import dcmread
 
 from .json import dump_json
 from .pretty import dump_pretty
@@ -22,11 +21,10 @@ def dump(format, src: str):
         msg = "{} doesn't exit".format(src)
         click.echo(msg, err=True)
 
-    dcm = dcmread(src)
     if format == 'pretty':
-        result = dump_pretty(dcm)
+        result = dump_pretty(src)
     else:
-        result = dump_json(dcm)
+        result = dump_json(src)
     click.echo(result)
 
 
