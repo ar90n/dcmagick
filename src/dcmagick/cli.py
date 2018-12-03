@@ -1,6 +1,6 @@
 import click
 
-from .subcommands import dump
+from .dump import dump
 
 cmd = click.Group()
 cmd = click.version_option()(cmd)

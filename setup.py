@@ -45,7 +45,8 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'dcmagick=dcmagick.cli:main'
+            'dcmagick=dcmagick.cli:main',
+            '_dcmagick-dump=dcmagick.dump.__init__:main'
         ]
     },
     classifiers=[

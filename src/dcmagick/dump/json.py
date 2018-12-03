@@ -1,23 +1,8 @@
 import json
-from enum import Enum
-from pathlib import Path
 
-import click
-from pydicom import dcmread, datadict
+from pydicom import datadict
 from pydicom.uid import UID
 from pydicom.multival import MultiValue
-
-
-class Format(Enum):
-    PRETTY = 'pretty'
-    JSON = 'json'
-
-    def __str__(self):
-        return self.value
-
-
-def dump_pretty(dcm):
-    return str(dcm)
 
 
 def dump_value(value):
@@ -71,18 +56,3 @@ def dump_json(dcm):
         return converted
 
     return json.dumps(_convert_to_dict(dcm))
-
-
-@click.option("--format", type=str, default=Format.PRETTY)
-@click.argument("src", nargs=1)
-def dump(format, src: str):
-    if not Path(src).exists():
-        msg = "{} doesn't exit".format(src)
-        click.echo(msg, err=True)
-
-    dcm = dcmread(src)
-    if format == 'pretty':
-        result = dump_pretty(dcm)
-    else:
-        result = dump_json(dcm)
-    click.echo(result)
