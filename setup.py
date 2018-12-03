@@ -47,6 +47,7 @@ setup(
         'console_scripts': [
             'dcmagick=dcmagick.cli:main',
             '_dcmagick-dump=dcmagick.dump.__init__:main'
+            '_dcmagick-find=dcmagick.find.__init__:main'
         ]
     },
     classifiers=[
