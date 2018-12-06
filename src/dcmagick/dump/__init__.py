@@ -14,6 +14,7 @@ class Format(Enum):
         return self.value
 
 
+@click.command()
 @click.option("--format", type=str, default=Format.PRETTY)
 @click.argument("src", nargs=1)
 def dump(format, src: str):
@@ -26,7 +27,3 @@ def dump(format, src: str):
     else:
         result = dump_json(src)
     click.echo(result)
-
-
-def main():
-    click.command()(dump)()
