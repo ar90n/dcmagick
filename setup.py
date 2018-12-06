@@ -48,6 +48,7 @@ setup(
             'dcmagick=dcmagick.cli:main',
             '_dcmagick-dump=dcmagick.dump.cli:main',
             '_dcmagick-find=dcmagick.find.cli:main',
+            '_dcmagick-render-slice=dcmagick.render.cli:main_render_slice'
         ]
     },
     classifiers=[
