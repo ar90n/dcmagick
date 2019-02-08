@@ -1,3 +1,4 @@
+from abc import ABCMeta, abstractclassmethod
 from enum import Enum
 from pathlib import Path
 from itertools import count
@@ -8,6 +9,7 @@ import skimage
 from pydicom import dcmread
 
 from ..util import read_dcms
+
 
 class OutputFormat(Enum):
     JPEG = '.jpg'
@@ -42,7 +44,7 @@ def calc_window(pixel_array, *, wc=None, ww=None):
     return wc, ww
 
 
-def apply_window(pixel_array, wc, ww):
+def apply_linear_window(pixel_array, wc, ww):
     half_width = ww // 2
     minv = wc - half_width
     maxv = wc + half_width
@@ -58,15 +60,12 @@ def apply_window(pixel_array, wc, ww):
 @click.command()
 @click.option('--wc', type=int, help='Window center')
 @click.option('--ww', type=int, help='Window width')
-@click.option('--cmap', type=int, help='Window width')
-@click.option('--gsps', type=str, multiple=True, help='Grayscale SoftCopy Presentation State Storage files')
-@click.option('--kos', type=str, multiple=True, help='Grayscale SoftCopy Presentation State Storage files')
-@click.argument('src', nargs=-1)
+@click.argument('src', type=click.Path(exists=True), nargs=-1)
 @click.argument('dst', nargs=1)
-def render(wc, ww, cmap, gsps, kos, src, dst):
-    format = _get_format(dst)
+def render(wc, ww, src, dst):
+    dst_format = _get_format(dst)
 
     for path, dcm in slice_loader(src, dst):
         wc, ww = calc_window(dcm.pixel_array, wc=wc, ww=ww)
-        buffer = apply_window(dcm.pixel_array, wc, ww)
+        buffer = apply_linear_window(dcm.pixel_array, wc, ww)
         skimage.io.imsave(path, buffer)
