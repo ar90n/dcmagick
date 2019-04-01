@@ -31,7 +31,8 @@ def slice_loader(src, dst):
     dst_path = Path(dst)
     for i, src_loc in enumerate(src):
         dcm = dcmread(src_loc)
-        output_path = dst_path.parent / '{}_{}{}'.format(dst_path.stem, i, dst_path.suffix)
+        output_path = dst_path.parent / \
+            '{}_{}{}'.format(dst_path.stem, i, dst_path.suffix)
         yield output_path, dcm
 
 
@@ -62,10 +63,10 @@ def apply_linear_window(pixel_array, wc, ww):
 @click.option('--ww', type=int, help='Window width')
 @click.argument('src', type=click.Path(exists=True), nargs=-1)
 @click.argument('dst', nargs=1)
-def render(wc, ww, src, dst):
+def convert(wc, ww, src, dst):
     dst_format = _get_format(dst)
 
     for path, dcm in slice_loader(src, dst):
         wc, ww = calc_window(dcm.pixel_array, wc=wc, ww=ww)
-        buffer = apply_linear_window(dcm.pixel_array, wc, ww)
-        skimage.io.imsave(path, buffer)
+        windowed_buffer = apply_linear_window(dcm.pixel_array, wc, ww)
+        skimage.io.imsave(path, windowed_buffer)

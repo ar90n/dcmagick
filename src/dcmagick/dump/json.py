@@ -25,8 +25,15 @@ def dump_value(value):
         return (value.VR in byte_VRs and len(value.value) > value.maxBytesToDisplay)
 
     def is_multiple_values(value):
-        vvm = datadict.get_entry(value.tag)[1].split('-')
-        return len(vvm) == 2 or 1 < int(vvm[0])
+        tag = value.tag
+        if not tag.is_private:
+            vvm = datadict.get_entry(tag)[1].split('-')
+            return len(vvm) == 2 or 1 < int(vvm[0])
+        elif hasattr(tag, 'private_creator'):
+            vvm = datadict.get_private_entry(tag, tag.private_creator)[1].split('-')
+            return len(vvm) == 2 or 1 < int(vvm[0])
+        else:
+            return 1
 
     if is_array_value(value):
         repVal = "Array of %d bytes" % len(value.value)
