@@ -4,4 +4,4 @@ from . import dump
 
 
 def main():
-    dump{()
+    dump()

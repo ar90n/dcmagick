@@ -10,11 +10,11 @@ class SliceFormat(Enum):
     UNKNOWN = "UNKNOWN"
 
 
-def get_format(fmt: str):
-    if fmt in ["dcm"]:
+def get_format(format: str):
+    if format in ["dcm"]:
         return SliceFormat.DICOM
-    elif fmt in ["jpg", "jpeg"]:
+    elif format in ["jpg", "jpeg"]:
         return SliceFormat.JPEG
-    elif fmt in ["png"]:
+    elif format in ["png"]:
         return SliceFormat.PNG
-    raise NotSupportFormatError(f"{fmt} is not supported.")
+    raise NotSupportFormatError(f"{format} is not supported.")

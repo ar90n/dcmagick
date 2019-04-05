@@ -1,8 +1,8 @@
 import click
 
+from .convert import convert
 from .dump import dump
 from .find import find
-from .convert import convert
 
 cmd = click.Group()
 cmd = click.version_option()(cmd)
