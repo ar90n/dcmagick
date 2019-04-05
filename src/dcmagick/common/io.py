@@ -51,12 +51,7 @@ def _read_dcm(fo, input_params, src_params):
     return DicomSliceProxy(dcm, params=src_params)
 
 
-def write(
-    fo,
-    slice_proxy,
-    format=SliceFormat.UNKNOWN,
-    params: dict = None,
-):
+def write(fo, slice_proxy, format=SliceFormat.UNKNOWN, params: dict = None):
     format = slice_proxy.ref[1] if format == SliceFormat.UNKNOWN else format
     params = {} if params is None else params
 
