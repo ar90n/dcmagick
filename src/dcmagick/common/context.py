@@ -32,11 +32,20 @@ def _parse_dst_path(dst_path: str):
 
 @contextmanager
 def slice_context(src_path: str, dst_path: str, params: dict = None):
+    """
+    """
+
     params = {} if params is None else params
     src_fo = sys.stdin if src_path == "-" else open(src_path, "rb")
+    input_params = params.get("input", {})
+    proxy_params = params.get("proxy", {})
+    proc_params = params.get("proc", {})
+    output_params = params.get("output", {})
     try:
-        slice_proxy = io.read(src_fo, **params.get("input", {}))
-        yield slice_proxy, params.get("proc", {})
+        slice_proxy = io.read(
+            src_fo, input_params=input_params, proxy_params=proxy_params
+        )
+        yield slice_proxy, proc_params
 
         if dst_path is not None:
             dst_format, real_dst_path = _parse_dst_path(dst_path)
@@ -44,7 +53,7 @@ def slice_context(src_path: str, dst_path: str, params: dict = None):
                 sys.stdout.buffer if real_dst_path == "-" else open(real_dst_path, "wb")
             )
             try:
-                io.write(dst_fo, slice_proxy, dst_format, **params.get("output", {}))
+                io.write(dst_fo, slice_proxy, dst_format, params=output_params)
             finally:
                 dst_fo.flush()
                 if real_dst_path != "-":

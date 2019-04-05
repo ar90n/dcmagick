@@ -10,36 +10,36 @@ from dcmagick.common.context import slice_context
 
 @pytest.fixture(
     params=[
-        ("png_16x16_path", None, None),
-        ("png_16x16_path", None, "dcm"),
-        ("png_16x16_path", "dcm", None),
-        ("jpg_16x16_path", None, None),
-        ("jpg_16x16_path", None, "dcm"),
-        ("jpg_16x16_path", "dcm", None),
-        ("dcm_16x16_le_path", None, None),
-        ("dcm_16x16_le_path", None, "dcm"),
-        ("dcm_16x16_le_path", "dcm", None),
-        ("dcm_16x16_le_path", None, "png"),
-        ("dcm_16x16_le_path", "png", None),
-        ("dcm_16x16_le_path", "png", "dcm"),
+        ("png_16x16_path", None, None, {}),
+        ("png_16x16_path", None, "dcm", {}),
+        ("png_16x16_path", "dcm", None, {}),
+        ("jpg_16x16_path", None, None, {"output": {"quality": 100}}),
+        ("jpg_16x16_path", None, "dcm", {}),
+        ("jpg_16x16_path", "dcm", None, {}),
+        ("dcm_16x16_le_path", None, None, {}),
+        ("dcm_16x16_le_path", None, "dcm", {}),
+        ("dcm_16x16_le_path", "dcm", None, {}),
+        ("dcm_16x16_le_path", None, "png", {}),
+        ("dcm_16x16_le_path", "png", None, {}),
+        ("dcm_16x16_le_path", "png", "dcm", {}),
     ]
 )
 def test_convert_format_context(request, tmpdir):
-    src_fixture, format, suffix = request.param
+    src_fixture, format, suffix, params = request.param
     format = "" if format is None else f"{format}:"
     suffix = "" if suffix is None else f".{suffix}"
 
     src_path = str(request.getfixturevalue(src_fixture))
     expect_dst_path = "{}/output{}".format(str(tmpdir), suffix)
     dst_path = "{}{}".format(format, expect_dst_path)
-    return src_path, dst_path, expect_dst_path
+    return src_path, dst_path, expect_dst_path, params
 
 
 def test_convert_format(test_convert_format_context):
-    src_path, dst_path, expect_dst_path = test_convert_format_context
+    src_path, dst_path, expect_dst_path, params = test_convert_format_context
     expect_pixels = np.arange(100).reshape(10, 10).astype(np.uint8)
 
-    with slice_context(src_path, dst_path) as proxy_and_params:
+    with slice_context(src_path, dst_path, params) as proxy_and_params:
         proxy, proc_params = proxy_and_params
         assert proxy.width == 16
         assert proxy.height == 16
@@ -62,7 +62,8 @@ def test_attr_override_context(request, tmpdir):
     src_path = str(request.getfixturevalue(src_fixture))
     dst_path = str(tmpdir / "output.dcm")
     expect_params = {
-        "input": {
+        "input": {},
+        "proxy": {
             "spacing": np.array([2.0, 3.0]),
             "origin": np.array([2.0, 3.0, 4.0]),
             "orientation": np.array([[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
@@ -80,17 +81,17 @@ def test_attr_override(test_attr_override_context):
     with slice_context(src_path, dst_path, expect_params) as proxy_and_params:
         proxy, proc_params = proxy_and_params
         assert proc_params == expect_params["proc"]
-        assert np.allclose(proxy.spacing, expect_params["input"]["spacing"])
-        assert np.allclose(proxy.origin, expect_params["input"]["origin"])
-        assert np.allclose(proxy.orientation, expect_params["input"]["orientation"])
+        assert np.allclose(proxy.spacing, expect_params["proxy"]["spacing"])
+        assert np.allclose(proxy.origin, expect_params["proxy"]["origin"])
+        assert np.allclose(proxy.orientation, expect_params["proxy"]["orientation"])
 
     assert os.path.exists(dst_path)
     with open(dst_path, "rb") as dst_fo:
         result = io.read(dst_fo)
-        assert np.allclose(result.spacing, expect_params["input"]["spacing"])
-        assert np.allclose(result.origin, expect_params["input"]["origin"])
-        assert np.allclose(result.orientation, expect_params["input"]["orientation"])
-        assert result.Modality == expect_params["input"]["Modality"]
+        assert np.allclose(result.spacing, expect_params["proxy"]["spacing"])
+        assert np.allclose(result.origin, expect_params["proxy"]["origin"])
+        assert np.allclose(result.orientation, expect_params["proxy"]["orientation"])
+        assert result.Modality == expect_params["proxy"]["Modality"]
 
 
 def test_only_src(dcm_16x16_le_path):

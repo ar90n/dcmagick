@@ -23,34 +23,43 @@ PixelInfo = namedtuple(
 )
 
 
-def read(fo, **params):
+def read(fo, input_params: dict = None, proxy_params: dict = None):
     _read_funcs = [_read_image, _read_dcm]
 
+    input_params = {} if input_params is None else input_params
+    proxy_params = {} if proxy_params is None else proxy_params
     for f in _read_funcs:
         try:
-            return f(fo, params)
+            return f(fo, input_params, proxy_params)
         except:
             fo.seek(0)
     raise ValueError("Unknown format data is given.")
 
 
-def _read_image(fo, params):
-    img = Image.open(fo)
+def _read_image(fo, input_params, src_params):
+    img = Image.open(fo, **input_params)
     pixel_array = np.asarray(img)
     try:
         slice_format = SliceFormat(img.format)
     except ValueError:
         slice_format = SliceFormat.UNKNOWN
-    return ImageSliceProxy(pixel_array, format=slice_format, params=params)
+    return ImageSliceProxy(pixel_array, format=slice_format, params=src_params)
 
 
-def _read_dcm(fo, params):
-    dcm = dcmread(fo)
-    return DicomSliceProxy(dcm, params=params)
+def _read_dcm(fo, input_params, src_params):
+    dcm = dcmread(fo, **input_params)
+    return DicomSliceProxy(dcm, params=src_params)
 
 
-def write(fo, slice_proxy, format=SliceFormat.UNKNOWN, **params):
+def write(
+    fo,
+    slice_proxy,
+    format=SliceFormat.UNKNOWN,
+    params: dict = None,
+):
     format = slice_proxy.ref[1] if format == SliceFormat.UNKNOWN else format
+    params = {} if params is None else params
+
     if format == SliceFormat.DICOM:
         _write_dcm(fo, slice_proxy, params)
     elif format in [SliceFormat.JPEG, SliceFormat.PNG]:
@@ -67,7 +76,7 @@ def _write_image(fo, slice_proxy, format, params):
         pixels = (255 * (pixels - min_value) / (max_value - min_value)).astype(np.uint8)
 
     img = Image.fromarray(pixels)
-    img.save(fo, format=format.value, quality=100, **params)
+    img.save(fo, format=format.value, **params)
 
 
 def _is_rgb888(pixels):
@@ -164,4 +173,4 @@ def _write_dcm(fo, slice_proxy, params):
             ds.ImageOrientationPatient = list(v.reshape(-1))
         else:
             setattr(ds, k, v)
-    ds.save_as(fo)
+    ds.save_as(fo, **params)

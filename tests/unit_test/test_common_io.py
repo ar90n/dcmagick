@@ -39,7 +39,6 @@ def test_write(write_context, tmpdir):
     with output_path.open("wb") as output_fo:
         slice_proxy.spacing = [2.3, 5.6]
         slice_proxy.Modality = 'DX'
-        #io.write(output_fo, slice_proxy)
-        io.write(output_fo, slice_proxy, fmt=SliceFormat.DICOM)
+        io.write(output_fo, slice_proxy, format=SliceFormat.DICOM)
 
     assert output_path.exists()
