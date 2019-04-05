@@ -1,6 +1,3 @@
-from pydicom import dcmread
-
-
 def _or(obj, value):
     result = False
     for query in value:
@@ -18,35 +15,44 @@ def _and(obj, value):
 def _eq(obj, value):
     return obj == value
 
+
 def _ne(obj, value):
     return not _eq(obj, value)
+
 
 def _in(obj, value):
     return obj in value
 
+
 def _gt(obj, value):
     return value < obj
+
 
 def _gte(obj, value):
     return _gt(obj, value) or _eq(obj, value)
 
+
 def _lt(obj, value):
     return not _gte(obj, value)
+
 
 def _lte(obj, value):
     return not _gt(obj, value)
 
 
 def _get_op(key):
-    _eq_with_key = lambda obj, value: _eq(obj[key], value)
+    def _eq_with_key(obj, value):
+        obj_attr = getattr(obj, key) if hasattr(obj, key) else obj[key]
+        return _eq(obj_attr, value)
+
     return {
-      '$eq': _eq,
-      '$ne': _ne,
-      '$in': _in,
-      '$gt': _gt,
-      '$gte': _gte,
-      '$lt': _lt,
-      '$lte': _lte,
+        "$eq": _eq,
+        "$ne": _ne,
+        "$in": _in,
+        "$gt": _gt,
+        "$gte": _gte,
+        "$lt": _lt,
+        "$lte": _lte,
     }.get(key, _eq_with_key)
 
 
@@ -72,7 +78,7 @@ def _match(obj, query):
     True
     """
     result = True
-    for key, value, in query.items():
+    for key, value in query.items():
         if isinstance(value, dict):
             ret = _match(obj[key], value)
         else:
@@ -80,10 +86,10 @@ def _match(obj, query):
         result &= ret
     return result
 
-def match(query, path):
+
+def match(query, slice_proxy):
     try:
-        dcm = dcmread(str(path))
-        result = _match(dcm, query)
+        result = _match(slice_proxy, query)
     except:
         return False
     return result
