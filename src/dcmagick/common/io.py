@@ -47,7 +47,12 @@ def _read_image(fo, input_params, src_params):
 
 
 def _read_dcm(fo, input_params, src_params):
-    dcm = dcmread(fo, **input_params)
+    dcmread_params = {
+        k: src_params[k]
+        for k in ["defer_size", "stop_before_pixels", "force", "specific_tags"]
+        if k in src_params
+    }
+    dcm = dcmread(fo, **dcmread_params)
     return DicomSliceProxy(dcm, params=src_params)
 
 
