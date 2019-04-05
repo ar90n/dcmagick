@@ -23,47 +23,51 @@ PixelInfo = namedtuple(
 )
 
 
-def read(fo):
+def read(fo, **params):
     _read_funcs = [_read_image, _read_dcm]
 
     for f in _read_funcs:
         try:
-            return f(fo)
+            return f(fo, params)
         except:
             fo.seek(0)
     raise ValueError("Unknown format data is given.")
 
 
-def _read_image(fo, attrs=None):
+def _read_image(fo, params):
     img = Image.open(fo)
     pixel_array = np.asarray(img)
     try:
         slice_format = SliceFormat(img.format)
     except ValueError:
         slice_format = SliceFormat.UNKNOWN
-    return ImageSliceProxy(pixel_array, format=slice_format, attrs=attrs)
+    return ImageSliceProxy(pixel_array, format=slice_format, params=params)
 
 
-def _read_dcm(fo, attrs=None):
+def _read_dcm(fo, params):
     dcm = dcmread(fo)
-    return DicomSliceProxy(dcm, attrs=attrs)
+    return DicomSliceProxy(dcm, params=params)
 
 
-def write(fo, slice_proxy, fmt=None, **params):
-    fmt = slice_proxy.ref[1] if fmt is None else fmt
-    if fmt == SliceFormat.DICOM:
-        _write_dcm(fo, slice_proxy)
-    elif fmt in [SliceFormat.JPEG, SliceFormat.PNG]:
-        _write_image(fo, slice_proxy, fmt=fmt, **params)
-    elif fmt == SliceFormat.UNKNOWN:
-        _write_image(fo, slice_proxy, fmt=SliceFormat.PNG, **params)
+def write(fo, slice_proxy, format=SliceFormat.UNKNOWN, **params):
+    format = slice_proxy.ref[1] if format == SliceFormat.UNKNOWN else format
+    if format == SliceFormat.DICOM:
+        _write_dcm(fo, slice_proxy, params)
+    elif format in [SliceFormat.JPEG, SliceFormat.PNG]:
+        _write_image(fo, slice_proxy, format, params)
     else:
-        raise ValueError(f"Unknown format({fmt}) is given.")
+        raise ValueError(f"Unknown format({format}) is given.")
 
 
-def _write_image(fo, slice_proxy, fmt=SliceFormat.PNG, **params):
-    img = Image.fromarray(slice_proxy.pixels)
-    img.save(fo, fmt=fmt.value, **params)
+def _write_image(fo, slice_proxy, format, params):
+    pixels = slice_proxy.pixels
+    if pixels.dtype != np.uint8:
+        min_value = float(np.min(pixels))
+        max_value = float(np.max(pixels))
+        pixels = (255 * (pixels - min_value) / (max_value - min_value)).astype(np.uint8)
+
+    img = Image.fromarray(pixels)
+    img.save(fo, format=format.value, quality=100, **params)
 
 
 def _is_rgb888(pixels):
@@ -79,7 +83,7 @@ def _is_mono(pixels):
 def _get_pixel_info(pixels):
     samples_per_pixel = 3 if _is_rgb888(pixels) else 1
     photometric_interpretation = "RGB" if _is_rgb888(pixels) else "MONOCHROME1"
-    bits_allocated = 8 if _is_rgb888(pixels) else 16
+    bits_allocated = 8 * pixels.dtype.itemsize
     pixel_representation = 1 if pixels.dtype == np.int16 else 0
 
     return PixelInfo(
@@ -132,7 +136,9 @@ def _(slice_proxy):
     file_meta.FileMetaInformationVersion = b"\x00\x01"
     file_meta.TransferSyntaxUID = uid.ImplicitVRLittleEndian
 
-    ds = Dataset({}, file_meta=file_meta, preamble=b"\0" * 128)
+    ds = Dataset()
+    ds.file_meta = file_meta
+    ds.preamble = b"\0" * 128
     ds.is_implicit_VR = True
     ds.is_little_endian = True
     ds.ImageType = ["ORIGINAL"]
@@ -142,7 +148,7 @@ def _(slice_proxy):
     return ds
 
 
-def _write_dcm(fo, slice_proxy):
+def _write_dcm(fo, slice_proxy, params):
     ds = _create_dataset(slice_proxy)
 
     for k, v in slice_proxy.__dict__.items():

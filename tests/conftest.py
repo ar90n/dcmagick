@@ -30,5 +30,4 @@ def generage_data_access_fixture(filename):
 expect_16x16 = generage_pickle_fixture('test_16x16.pickle')
 jpg_16x16_fo, jpg_16x16_path = generage_data_access_fixture('test_16x16.jpg')
 png_16x16_fo, png_16x16_path = generage_data_access_fixture('test_16x16.png')
-dcm_16x16_le_fo, dcm_16x16_le_path = generage_data_access_fixture(
-    'test_16x16_le.dcm')
+dcm_16x16_le_fo, dcm_16x16_le_path = generage_data_access_fixture('test_16x16_le.dcm')

@@ -60,8 +60,8 @@ def read_slice_proxy_context(request):
 
 
 def test_read_slice_proxy(read_slice_proxy_context):
-    content, ProxyClass, attrs, expects = read_slice_proxy_context
-    proxy = ProxyClass(content, attrs=attrs)
+    content, ProxyClass, params, expects = read_slice_proxy_context
+    proxy = ProxyClass(content, params=params)
     assert proxy.width == expects["width"]
     assert proxy.height == expects["height"]
     assert np.allclose(proxy.spacing, expects["spacing"], equal_nan=True)
@@ -83,7 +83,7 @@ def write_slice_proxy_context(request):
 
 def test_write_slice_proxy(write_slice_proxy_context):
     content, ProxyClass = write_slice_proxy_context
-    proxy = ProxyClass(content, attrs={})
+    proxy = ProxyClass(content, params={})
 
     proxy.pixels = np.arange(12).reshape(3, 4)
     assert proxy.width == 4
@@ -202,16 +202,16 @@ def modify_slice_proxy_context(request):
 
 
 def test_modify_slice_proxy(modify_slice_proxy_context):
-    slice_proxy, attrs, expect_attrs, expect_dict = modify_slice_proxy_context
-    if expect_attrs is None:
-        expect_attrs = attrs
+    slice_proxy, params, expect_params, expect_dict = modify_slice_proxy_context
+    if expect_params is None:
+        expect_params = params
     if expect_dict is None:
-        expect_dict = expect_attrs
+        expect_dict = expect_params
 
-    for k, v in attrs.items():
+    for k, v in params.items():
         setattr(slice_proxy, k, v)
 
-    for k, v in expect_attrs.items():
+    for k, v in expect_params.items():
         assert np.all(getattr(slice_proxy, k) == v)
 
     actual_dict = {

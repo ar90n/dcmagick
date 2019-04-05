@@ -19,9 +19,9 @@ class proxy_property:
 
 
 class SliceProxy(ABC):
-    def __init__(self, attrs=None):
-        if attrs is not None:
-            self.__dict__.update(attrs)
+    def __init__(self, params=None):
+        if params is not None:
+            self.__dict__.update(params)
 
     @property
     def width(self):
@@ -53,11 +53,11 @@ class SliceProxy(ABC):
 
 
 class ImageSliceProxy(SliceProxy):
-    def __init__(self, pixel_array, format=None, attrs=None):
-        super().__init__(attrs)
+    def __init__(self, pixel_array, format=None, params=None):
+        super().__init__(params)
         self._pixel_array = pixel_array
         self._format = SliceFormat.UNKNOWN if format is None else format
-        self._attrs = attrs
+        self._params = params
 
     @proxy_property
     def pixels(self):
@@ -81,7 +81,7 @@ class ImageSliceProxy(SliceProxy):
 
     @property
     def ref(self):
-        return (self._pixel_array, self._format, self._attrs)
+        return (self._pixel_array, self._format, self._params)
 
 
 class DicomSliceProxy(SliceProxy):
@@ -92,10 +92,10 @@ class DicomSliceProxy(SliceProxy):
         "ImageOrientationPatient": "orientation",
     }
 
-    def __init__(self, dcm, attrs=None):
-        super().__init__(attrs)
+    def __init__(self, dcm, params=None):
+        super().__init__(params)
         self._dcm = dcm
-        self._attrs = attrs
+        self._params = params
 
     @proxy_property
     def pixels(self):
@@ -125,7 +125,7 @@ class DicomSliceProxy(SliceProxy):
 
     @property
     def ref(self):
-        return (self._dcm, SliceFormat.DICOM, self._attrs)
+        return (self._dcm, SliceFormat.DICOM, self._params)
 
     def __getattr__(self, key):
         proxy_key = self._PROXY_KEY_MAP.get(key, key)
