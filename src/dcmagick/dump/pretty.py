@@ -1,4 +1,5 @@
-from pydicom import dcmread
+from ..common.dicom import create_dataset_of
 
-def dump_pretty(src):
-    return str(dcmread(src))
+def dump_pretty(proxy):
+    ds = create_dataset_of(proxy)
+    return str(ds)

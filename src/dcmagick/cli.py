@@ -13,4 +13,8 @@ cmd.add_command(convert)
 
 
 def main():
-    cmd()
+    try:
+        cmd()
+    except FileNotFoundError as e:
+        msg = "{} doesn't exit".format(str(e.filename))
+        click.echo(msg, err=True)
