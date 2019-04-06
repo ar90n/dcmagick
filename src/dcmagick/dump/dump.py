@@ -5,6 +5,7 @@ import click
 
 from .json import dump_json
 from .pretty import dump_pretty
+from .braille import dump_braille
 
 
 from ..common.context import slice_context
@@ -13,6 +14,7 @@ from ..common.context import slice_context
 class Format(Enum):
     PRETTY = "pretty"
     JSON = "json"
+    BRAILLE = "braille"
 
     def __str__(self):
         return self.value
@@ -26,6 +28,8 @@ def dump(format, src: str):
         slice_proxy, _ = proxy_and_param
         if format == "pretty":
             result = dump_pretty(slice_proxy)
-        else:
+        elif format == "json":
             result = dump_json(slice_proxy)
+        else:
+            result = dump_braille(slice_proxy)
         click.echo(result)
