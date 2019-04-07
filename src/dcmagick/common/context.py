@@ -52,7 +52,6 @@ def slice_context(src_path: str, dst_path: str, params: dict = None):
         Values to each keys should be dict and contain any value.
             * input  : Parameters for input process such as file reading.
             * proxy  : Parameters for proxy object. This is used for overriding its attributes.
-            * proc   : Parameters for main processing. This is passed to caller as one of return value.
             * output : Parameters for output process such as file writing.
     """
 
@@ -60,13 +59,12 @@ def slice_context(src_path: str, dst_path: str, params: dict = None):
     src_fo = sys.stdin if src_path == "-" else open(src_path, "rb")
     input_params = params.get("input", {})
     proxy_params = params.get("proxy", {})
-    proc_params = params.get("proc", {})
     output_params = params.get("output", {})
     try:
         slice_proxy = io.read(
             src_fo, input_params=input_params, proxy_params=proxy_params
         )
-        yield slice_proxy, proc_params
+        yield slice_proxy
 
         if dst_path is not None:
             dst_format, real_dst_path = _parse_dst_path(dst_path)

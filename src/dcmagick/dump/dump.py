@@ -24,8 +24,7 @@ class Format(Enum):
 @click.option("--format", type=str, default=Format.PRETTY)
 @click.argument("src", nargs=1)
 def dump(format, src: str):
-    with slice_context(src, None) as proxy_and_param:
-        slice_proxy, _ = proxy_and_param
+    with slice_context(src, None) as slice_proxy:
         if format == "pretty":
             result = dump_pretty(slice_proxy)
         elif format == "json":

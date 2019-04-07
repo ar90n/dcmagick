@@ -39,8 +39,7 @@ def test_convert_format(test_convert_format_context):
     src_path, dst_path, expect_dst_path, params = test_convert_format_context
     expect_pixels = np.arange(100).reshape(10, 10).astype(np.uint8)
 
-    with slice_context(src_path, dst_path, params) as proxy_and_params:
-        proxy, proc_params = proxy_and_params
+    with slice_context(src_path, dst_path, params) as proxy:
         assert proxy.width == 16
         assert proxy.height == 16
         proxy.pixels = expect_pixels
@@ -69,7 +68,6 @@ def test_attr_override_context(request, tmpdir):
             "orientation": np.array([[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
             "Modality": "MR",
         },
-        "proc": {"foo": 123},
         "output": {},
     }
     return src_path, dst_path, expect_params
@@ -78,9 +76,7 @@ def test_attr_override_context(request, tmpdir):
 def test_attr_override(test_attr_override_context):
     src_path, dst_path, expect_params = test_attr_override_context
 
-    with slice_context(src_path, dst_path, expect_params) as proxy_and_params:
-        proxy, proc_params = proxy_and_params
-        assert proc_params == expect_params["proc"]
+    with slice_context(src_path, dst_path, expect_params) as proxy:
         assert np.allclose(proxy.spacing, expect_params["proxy"]["spacing"])
         assert np.allclose(proxy.origin, expect_params["proxy"]["origin"])
         assert np.allclose(proxy.orientation, expect_params["proxy"]["orientation"])
@@ -97,8 +93,7 @@ def test_attr_override(test_attr_override_context):
 def test_only_src(dcm_16x16_le_path):
     src_path = dcm_16x16_le_path
 
-    with slice_context(src_path, None) as proxy_and_params:
-        proxy, _ = proxy_and_params
+    with slice_context(src_path, None) as proxy:
         assert proxy.width == 16
         assert proxy.height == 16
 
@@ -118,7 +113,6 @@ def test_stdout(dcm_16x16_le_path, capfdbinary):
 def test_stdin(dcm_16x16_le_fo, monkeypatch):
     monkeypatch.setattr("sys.stdin", dcm_16x16_le_fo)
 
-    with slice_context("-", None) as proxy_and_params:
-        slice_proxy, _ = proxy_and_params
-        assert slice_proxy.width == 16
-        assert slice_proxy.height == 16
+    with slice_context("-", None) as proxy:
+        assert proxy.width == 16
+        assert proxy.height == 16

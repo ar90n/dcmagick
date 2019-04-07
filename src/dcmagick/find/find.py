@@ -23,8 +23,7 @@ def find(p, name, query, root):
         return
 
     def _find_task(path):
-        with slice_context(str(path), None) as proxy_and_param:
-            slice_proxy, _ = proxy_and_param
+        with slice_context(str(path), None) as slice_proxy:
             if match(query_obj, slice_proxy):
                 click.echo(path)
 
