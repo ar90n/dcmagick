@@ -60,7 +60,7 @@ def dump_value(value):
     return repVal
 
 
-def dump_json(proxy):
+def dump(proxy):
     def _convert_to_dict(proxy):
         converted = {}
         ds = create_dataset_of(proxy)
