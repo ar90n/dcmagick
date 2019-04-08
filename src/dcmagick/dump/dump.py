@@ -33,7 +33,7 @@ def _get_dump_func(format: Format):
     callback=lambda c, p, v: getattr(Format, v) if v else None,
     default=Format.PRETTY,
 )
-@click.argument("src", nargs=1)
+@click.argument("src", type=click.Path(exists=True), nargs=1)
 def dump(format, src: str):
     with slice_context(src, None) as slice_proxy:
         dump_func = _get_dump_func(format)
