@@ -1,8 +1,11 @@
 from enum import Enum
+from pathlib import Path
 
 import click
 
+from ..common.window import assign as assign_window
 from ..common.context import slice_context
+from ..common.format import SliceFormat
 from .json import dump as dump_json
 from .pretty import dump as dump_pretty
 from .terminal import dump_braille, dump_halfblock, dump_iterm2
@@ -33,8 +36,10 @@ def _get_dump_func(format: Format):
     callback=lambda c, p, v: getattr(Format, v) if v else None,
     default=Format.PRETTY,
 )
+@click.option("--window", type=str, help="Window configuration")
 @click.argument("src", type=click.Path(exists=True), nargs=1)
-def dump(format, src: str):
-    with slice_context(src, None) as slice_proxy:
+def dump(format: SliceFormat, window: str, src: Path):
+    with slice_context(str(src), None) as slice_proxy:
+        assign_window(slice_proxy, window)
         dump_func = _get_dump_func(format)
         click.echo(dump_func(slice_proxy))

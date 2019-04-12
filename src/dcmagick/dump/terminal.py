@@ -2,12 +2,12 @@ import numpy as np
 
 from teimpy import Mode, get_drawer
 
-from ..common.improc import normalize_cast
+from ..common.window import apply as apply_window
 
 
 def _dump(mode, proxy):
     drawer = get_drawer(mode)
-    return drawer.draw(normalize_cast(proxy.pixels, np.dtype("uint8")))
+    return drawer.draw(apply_window(proxy))
 
 
 def dump_braille(proxy):
