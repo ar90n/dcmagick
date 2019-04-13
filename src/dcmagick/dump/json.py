@@ -61,9 +61,8 @@ def dump_value(value):
 
 
 def dump(proxy):
-    def _convert_to_dict(proxy):
+    def _convert_to_dict(ds):
         converted = {}
-        ds = create_dataset_of(proxy)
         for key in sorted(ds.keys()):
             element = ds[key]
             dumped_key = str(key).strip("()")
@@ -79,4 +78,4 @@ def dump(proxy):
             converted[dumped_key] = dumped_value
         return converted
 
-    return json.dumps(_convert_to_dict(proxy))
+    return json.dumps(_convert_to_dict(create_dataset_of(proxy)))

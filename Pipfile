@@ -9,13 +9,13 @@ click = "*"
 numpy = "*"
 joblib = "*"
 scikit-image = "*"
+teimpy = "*"
 
 [dev-packages]
 pytest = "*"
 setuptools = "*"
 autopep8 = "*"
-black = "*"
 isort = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"

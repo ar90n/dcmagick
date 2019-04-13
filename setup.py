@@ -27,7 +27,7 @@ with get_path('README.md').open() as f:
 
 setup(
     name='dcmagick',
-    version='0.0.1',
+    version='0.0.2',
     license='MIT',
     description='Python libray for displaying images on terminal',
     long_description=readme,
@@ -45,10 +45,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'dcmagick=dcmagick.cli:main',
-            '_dcmagick-dump=dcmagick.dump.cli:main',
-            '_dcmagick-find=dcmagick.find.cli:main',
-            '_dcmagick-render-slice=dcmagick.render.cli:main_render_slice'
+            'dcmagick=dcmagick.cli:main'
         ]
     },
     classifiers=[
@@ -57,7 +54,6 @@ setup(
         'Topic :: Software Development',
         'Intended Audience :: Developers',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],

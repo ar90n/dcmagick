@@ -22,6 +22,7 @@ PixelInfo = namedtuple(
 
 @singledispatch
 def create_dataset_of(slice_proxy):
+    import pdb; pdb.set_trace()
     raise ValueError("Unknown slice proxy is given.")
 
 

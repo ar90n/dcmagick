@@ -19,4 +19,4 @@ def dump_halfblock(proxy):
 
 
 def dump_iterm2(proxy):
-    return _dump(Mode.ITERM2, proxy)
+    return _dump(Mode.ITERM2_INLINE_IMAGE, proxy)
