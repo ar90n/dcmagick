@@ -18,7 +18,7 @@ $ pypi install dcmagick
 
 Dump DICOM tags and images on terminal via various format.
 
-Dump by PRETTYE
+#### Dump by PRETTYE
 ```bash
 $ dcmagick dump --format PRETTY ~/dcms/CT_small.dcm 2> /dev/null
 (0008, 0005) Specific Character Set              CS: 'ISO_IR 100'
@@ -41,7 +41,7 @@ $ dcmagick dump --format PRETTY ~/dcms/CT_small.dcm 2> /dev/null
 ...
 ```
 
-Dump by JSON
+#### Dump by JSON
 ```bash
 $ dcmagick dump --format JSON ~/dcms/CT_small.dcm 2> /dev/null | jq .
 {
@@ -79,7 +79,7 @@ $ dcmagick dump --format JSON ~/dcms/CT_small.dcm 2> /dev/null | jq .
 ...
 ```
 
-Dump by BRAILLE
+#### Dump by BRAILLE
 ```bash
 $ dcmagick dump --format BRAILLE ~/dcms/CT_small.dcm 2> /dev/null
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠌⢆⠕⡌⡢⡑⡐⢌⠢⠑⢌⠪⡪⡪⡪⡪⡪⣪⢪⡪⡪⡪⡪⡪⡪⡪⡪⣪⢪⢪⢂⠀⠀⠀⠀⠀⠀⠀⠀⠀
@@ -116,14 +116,13 @@ $ dcmagick dump --format BRAILLE ~/dcms/CT_small.dcm 2> /dev/null
 ⢐⢁⢂⠢⠡⢂⢂⢂⠢⠡⡈⠢⠨⠨⠨⠊⠌⢄⢑⢐⠄⠕⡐⠡⠡⡑⠄⢕⠨⢊⢐⠅⠅⠕⡐⡐⡡⠨⡨⢂⢂⠢⢂⢑⢐⠔⡐⢌⠐⢄⢑⢐⠔⠡⠡⠡⢂⠊⠔⡨⢈⠢⡁⠢
 ```
 
-
-Dump by HALFBLOCK
+#### Dump by HALFBLOCK
 ```bash
 $ dcmagick dump --format HALFBLOCK ~/dcms/CT_small.dcm 2> /dev/null
 ```
 ![Dump by HALFBLOCK](https://github.com/ar90n/dcmagick/blob/doc/images/sc_halfblock.png)
 
-Dump by ITERM2
+#### Dump by ITERM2
 ```bash
 $ dcmagick dump --format ITERM2 ~/dcms/CT_small.dcm 2> /dev/null
 ```
@@ -154,14 +153,14 @@ $ dcmagick find --query '{"Modality": "MR"}' --name '*.dcm' ~/dcms/ 2> /dev/null
 
 Convert DICOM images into PNG or JPEG, and vice versa.
 
-DICOM to PNG.
+#### DICOM to PNG.
 ```bash
 $ dcmagick convert ~/dcms/CT_small.dcm ~/out.png 2> /dev/null
 $ file out.png
 /home/argon/out.png: PNG image data, 128 x 128, 8-bit grayscale, non-interlaced
 ```
 
-PNG to DICOM.
+#### PNG to DICOM.
 ```bash
 $ dcmagick convert ~/out.png ~/out.dcm 2> /dev/null
 $ file out.dcm
