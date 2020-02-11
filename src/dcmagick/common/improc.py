@@ -11,4 +11,3 @@ def normalize_cast(arr, maxv=None, minv=None, dtype=None):
         result = np.round(np.iinfo(dtype).max * result)
 
     return result.astype(dtype)
-

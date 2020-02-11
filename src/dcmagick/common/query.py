@@ -90,6 +90,6 @@ def _match(obj, query):
 def match(query, slice_proxy):
     try:
         result = _match(slice_proxy, query)
-    except:
+    except Exception:
         return False
     return result

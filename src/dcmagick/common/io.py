@@ -15,7 +15,7 @@ def read(fo, input_params: dict = None, proxy_params: dict = None):
     for f in _read_funcs:
         try:
             return f(fo, input_params, proxy_params)
-        except:
+        except Exception:
             fo.seek(0)
     raise ValueError("Unknown format data is given.")
 

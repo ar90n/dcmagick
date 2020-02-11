@@ -1,5 +1,6 @@
 import re
 import sys
+from typing import Optional, IO
 from contextlib import contextmanager
 
 from . import io
@@ -37,7 +38,7 @@ def _parse_dst_path(path: str):
 
 
 @contextmanager
-def slice_context(src_path: str, dst_path: str, params: dict = None):
+def slice_context(src_path: str, dst_path: Optional[str], params: dict = None):
     """
     Slice-wise processing context
 
@@ -79,4 +80,4 @@ def slice_context(src_path: str, dst_path: str, params: dict = None):
                     dst_fo.close()
     finally:
         if src_path != "-":
-            src_fo.close()
+            src_fo.close()  # type: ignore

@@ -11,6 +11,6 @@ def read_dcms(dcm_paths):
         dcm = pydicom.dcmread(path)
         result.setdefault(dcm.StudyInstanceUID, {}).setdefault(
             dcm.SeriesInstanceUID, {}
-        )[dcm.SOPInstanceUID] = (dcm)
+        )[dcm.SOPInstanceUID] = dcm
 
     return result

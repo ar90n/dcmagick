@@ -22,12 +22,14 @@ PixelInfo = namedtuple(
 
 @singledispatch
 def create_dataset_of(slice_proxy):
-    import pdb; pdb.set_trace()
+    import pdb
+
+    pdb.set_trace()
     raise ValueError("Unknown slice proxy is given.")
 
 
 @create_dataset_of.register(DicomSliceProxy)
-def _(slice_proxy):
+def _d(slice_proxy):
     ds = deepcopy(slice_proxy.ref[0])
     for k, v in slice_proxy.__dict__.items():
         if k.startswith("_"):
@@ -46,7 +48,7 @@ def _(slice_proxy):
 
 
 @create_dataset_of.register(ImageSliceProxy)
-def _(slice_proxy):
+def _i(slice_proxy):
     sop_inst_uid = uid.generate_uid()
 
     file_meta = Dataset()

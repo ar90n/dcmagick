@@ -10,6 +10,7 @@ sys.path.append(str(src_root_path))
 DATA_ROOT = Path(__file__).parent / "data"
 data_root_path = pytest.fixture()(DATA_ROOT.absolute)
 
+
 def generage_pickle_fixture(filename):
     pickle_path = DATA_ROOT / filename
 

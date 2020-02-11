@@ -1,5 +1,5 @@
 import re
-from collections import Iterable
+from collections import Sequence
 
 import numpy as np
 
@@ -21,7 +21,7 @@ def _parse_window(window: str, slice_proxy: SliceProxy):
     ...
     dcmagick.common.exception.WindowFormatError: 100x200abc is invalid for --window.
     >>> _parse_window("0", proxy)
-    (200.0, 300.0)
+    (None, None)
     >>> proxy.WindowCenter = [200, 500]
     >>> proxy.WindowWidth = [300, 800]
     >>> _parse_window("0", proxy)
@@ -50,12 +50,12 @@ def _parse_window(window: str, slice_proxy: SliceProxy):
     if m is not None:
         index = int(m.group(1))
         wc_candidates = getattr(slice_proxy, "WindowCenter", [])
-        if not isinstance(wc_candidates, Iterable):
+        if not isinstance(wc_candidates, Sequence):
             wc_candidates = [wc_candidates]
         wc = float(wc_candidates[index]) if index < len(wc_candidates) else None
 
         ww_candidates = getattr(slice_proxy, "WindowWidth", [])
-        if not isinstance(ww_candidates, Iterable):
+        if not isinstance(ww_candidates, Sequence):
             ww_candidates = [ww_candidates]
         ww = float(ww_candidates[index]) if index < len(ww_candidates) else None
         return wc, ww
@@ -74,15 +74,15 @@ def assign(slice_proxy: SliceProxy, window: str):
     if isinstance(slice_proxy, DicomSliceProxy) and (wc is None or ww is None):
         return
 
-    slice_proxy.WindowCenter = wc
-    slice_proxy.WindowWidth = ww
+    setattr(slice_proxy, "WindowCenter", wc)
+    setattr(slice_proxy, "WindowWidth", ww)
 
 
 def apply(slice_proxy: SliceProxy) -> np.ndarray:
     wc = getattr(slice_proxy, "WindowCenter")
-    wc = wc[0] if isinstance(wc, Iterable) else wc
+    wc = wc[0] if isinstance(wc, Sequence) else wc
     ww = getattr(slice_proxy, "WindowWidth")
-    ww = ww[0] if isinstance(ww, Iterable) else ww
+    ww = ww[0] if isinstance(ww, Sequence) else ww
 
     if wc is None or ww is None:
         return normalize_cast(slice_proxy.pixels, dtype=np.dtype("uint8"))

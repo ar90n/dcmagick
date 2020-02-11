@@ -23,7 +23,7 @@ class SliceFormat(Enum):
         >>> SliceFormat.of("png")
         <SliceFormat.PNG: 'PNG'>
         """
-    
+
         if format in ["dcm"]:
             return SliceFormat.DICOM
         elif format in ["jpg", "jpeg"]:
